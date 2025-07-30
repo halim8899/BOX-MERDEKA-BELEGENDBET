@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      color: white;
+      padding: 30px;
+      background: url('https://blogger.googleusercontent.com/img/a/AVvXsEj13V7i30b03a52dThS1ijEwa7Hhg0K4B6oMOE6rDXV2rJyVlIqZSJCSX6dM6NAeMFzejfHccOn7NEZ8oZW01S6m_6sWQQOzjfo1sDz2WY936lPTkLhxL_uBTIb0yk2D1THrYjesq4jVmHb6COxoZmv-ANUIG7hckVqghyN48E61cyBtPfKNc6VX7AquYs') no-repeat center center fixed;
+      background-size: cover;
+    }
+    h2 {
+      font-size: 56px;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 10px;
+    }
+    .glow-title {
+      text-shadow: 0 0 8px #ff00cc, 0 0 16px #ff66cc, 0 0 24px #ff99cc;
+      font-weight: bold;
+    }
+    .glow-icon {
+      font-size: 66px;
+      filter: drop-shadow(0 0 6px #ff00cc) drop-shadow(0 0 16px #ff66cc) drop-shadow(0 0 24px #ff99cc);
+    }
+    .input-group {
+      margin-bottom: 25px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+    }
+    .input-row {
+      display: flex;
+      gap: 6px;
+      justify-content: center;
+      width: 100%;
+      max-width: 340px;
+    }
+    input {
+      width: 100%;
+      min-width: 0;
+      max-width: 300px;
+      padding: 16px;
+      border-radius: 12px;
+      border: none;
+      background-color: #333;
+      color: white;
+      text-align: center;
+      font-size: 18px;
+      outline: none;
+      box-shadow: 0 0 6px #00eaff;
+      transition: box-shadow 0.2s;
+      caret-color: yellow;
+    }
+    input:focus {
+      box-shadow: 0 0 18px 6px #ff00cc, 0 0 8px #00eaff;
+    }
+    #spinBtn {
+      background: #ff1919;
+      color: #fff;
+      box-shadow: 0 0 20px 5px #fff;
+      border: none;
+      outline: none;
+      font-weight: bold;
+      letter-spacing: 2px;
+      font-size: 27px;
+      border-radius: 18px;
+      padding: 20px 50px;
+      transition: box-shadow 0.2s, background 0.18s;
+      margin-bottom: 25px;
+    }
+    #spinBtn:hover {
+      background: #ff4343;
+      box-shadow: 0 0 44px 18px #ff6a6a, 0 0 120px 10px #ff1f96;
+    }
+    .spin-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 135px);
+      grid-template-rows: repeat(3, 135px);
+      gap: 20px;
+      justify-content: center;
+      align-items: center;
+      margin: 0 auto;
+    }
+    .slot {
+      width: 130px;
+      height: 130px;
+      background-color: black;
+      border: 3px solid transparent;
+      border-radius: 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 56px;
+      transition: 0.2s;
+      user-select: none;
+    }
+    .slot.glow {
+      box-shadow: 0 0 18px 6px yellow;
+      z-index: 2;
+    }
+    .slot[data-index="0"], .slot[data-index="6"] { border-color: #ff00ff; }
+    .slot[data-index="4"], .slot[data-index="9"] { border-color: #ff3333; }
+    .slot[data-index="1"], .slot[data-index="5"] { border-color: #ffff00; }
+    .slot[data-index="2"], .slot[data-index="7"] { border-color: lime; }
+    .slot[data-index="3"], .slot[data-index="8"] { border-color: #9933ff; }
+    .logo-slot {
+      grid-column: 2 / span 2;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    .logo-slot img {
+      width: 100%;
+      height: 100%;
+      max-width: 350px;
+      max-height: 290px;
+      object-fit: contain;
+      animation: pulseLogo 2.5s infinite ease-in-out;
+      display: block;
+      margin: 0 auto;
+      filter: drop-shadow(0 0 10px #fff200) drop-shadow(0 0 24px #ff3333);
+    }
+    @keyframes blinkBg {
+      0%, 100% { background-color: #ff0099; }
+      50% { background-color: #ff6666; }
+    }
+    .slot.blink { animation: blinkBg 0.6s infinite; }
+    @keyframes pulseLogo {
+      0%, 100% {
+        transform: scale(1);
+        filter: drop-shadow(0 0 6px #00eaff) drop-shadow(0 0 12px #00eaff);
+      }
+      50% {
+        transform: scale(1.05);
+        filter: drop-shadow(0 0 20px #00eaff) drop-shadow(0 0 30px #00eaff);
+      }
+    }
+    .sosmed-float {
+      position: fixed;
+      bottom: 90px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      z-index: 999;
+      animation: float 3s ease-in-out infinite;
+    }
+    .sosmed-float a img {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      box-shadow: 0 0 12px 4px lime;
+      transition: transform 0.3s, box-shadow 0.3s;
+    }
+    .sosmed-float a img:hover {
+      transform: scale(1.15);
+      box-shadow: 0 0 16px 8px yellow;
+    }
+    @keyframes float {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+      100% { transform: translateY(0); }
+    }
+    .marquee-box {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      background: #000;
+      color: #0f0;
+      padding: 2px 0;
+      z-index: 9999;
+      overflow: hidden;
+      box-shadow: 0 -2px 5px #0033ff;
+      font-weight: bold;
+    }
+    .marquee-text {
+      display: inline-block;
+      white-space: nowrap;
+      animation: jalanText 20s linear infinite;
+      font-size: 16px;
+      padding-left: 100%;
+    }
+    @keyframes jalanText {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    /* MODAL NEON */
+    .modal-neon-overlay {
+      position: fixed;
+      z-index: 99999;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.40);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.2s;
+    }
+    .modal-neon {
+      background: #fffd71;
+      border-radius: 30px;
+      box-shadow: 0 0 40px 10px #f6ff00, 0 0 32px 4px #fff333, 0 0 0 8px #ffe60077;
+      padding: 48px 56px 38px 56px;
+      min-width: 380px;
+      max-width: 95vw;
+      text-align: center;
+      animation: fadeInScale 0.3s cubic-bezier(.71,-0.41,.5,1.63);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    @keyframes fadeInScale {
+      from { opacity: 0; transform: scale(0.8);}
+      to { opacity: 1; transform: scale(1);}
+    }
+    .modal-neon .icon-top {
+      font-size: 56px;
+      margin-bottom: 20px;
+    }
+    .modal-neon .menang-title {
+      font-size: 48px;
+      color: #ffe000;
+      font-weight: bold;
+      letter-spacing: 2px;
+      text-shadow: 0 0 10px #fff, 0 0 6px #ff9800, 0 0 8px #fff050;
+      margin-bottom: 12px;
+      margin-top: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+    .modal-neon .menang-title span {
+      color: #ffb700;
+      font-size: 42px;
+      font-weight: bold;
+    }
+    .modal-neon .hadiah-nominal {
+      font-size: 36px;
+      color: #212121;
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 16px;
+    }
+    .modal-neon .modal-btn { display: none; }
+    /* KOTAK KLAIM NEON TENGAH */
+    #claimBox {
+      width: 600px;
+      max-width: 95vw;
+      margin: 40px auto 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      z-index: 100;
+    }
+    #claimBox .neon-claim-btn {
+      width: 100%;
+      background: #ffe600;
+      color: #222;
+      padding: 38px 0;
+      border-radius: 18px;
+      font-size: 2.6rem;
+      font-weight: bold;
+      border: none;
+      box-shadow: 0 0 28px 10px #ffe600, 0 0 4px #000;
+      letter-spacing: 2px;
+      text-shadow: 0 0 4px #fff, 0 0 1px #ffe600;
+      transition: 0.18s;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 14px;
+      white-space: nowrap;
+      text-align: center;
+      line-height: 1.2;
+      margin: 0 auto;
+    }
+    #claimBox .neon-claim-btn:hover {
+      background: #ffde2d;
+      color: #000;
+      box-shadow: 0 0 48px 16px #ffe600, 0 0 4px #000;
+    }
+    @media (max-width: 700px) {
+      #claimBox {
+        width: 98vw !important;
+        max-width: 98vw !important;
+      }
+      #claimBox .neon-claim-btn {
+        font-size: 1.3rem;
+        padding: 18px 0;
+      }
+    }
+    #claimBox a,
+    #claimBox a *,
+    #claimBox .neon-claim-btn,
+    #claimBox .neon-claim-btn * {
+      text-decoration: none !important;
+    }
+    .klaim-btn-neon {
+      background: #ffe600;
+      color: #222;
+      border: none;
+      font-size: 2rem;
+      font-weight: bold;
+      padding: 18px 48px;
+      border-radius: 18px;
+      box-shadow: 0 0 18px 6px #ffe600, 0 0 4px #000;
+      margin-top: 32px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .klaim-btn-neon:hover {
+      background: #ffde2d;
+      color: #000;
+      box-shadow: 0 0 48px 16px #ffe600, 0 0 4px #000;
+    }
+  </style>
+</head>
+<body>
+  <h2>
+    <span class="glow-icon">🎁</span>
+    <span class="glow-title">BOX MERDEKA BELEGENDBET</span>
+    <span class="glow-icon">🎁</span>
+  </h2>
+  <div class="input-group">
+    <input type="text" id="userid" placeholder="Masukkan ID Anda" autocomplete="on" autocapitalize="off" spellcheck="false">
+    <div class="input-row">
+      <input type="text" id="kode" placeholder="Masukkan Kode SPIN" autocomplete="on" autocapitalize="off" spellcheck="false" style="margin-bottom:0;">
+    </div>
+  </div>
+  <button id="spinBtn" onclick="mulaiGame()">🎮 PUTAR BOX MERDEKA</button>
+  <div class="spin-grid" id="grid">
+    <div class="slot" data-index="0">?</div>
+    <div class="slot" data-index="1">?</div>
+    <div class="slot" data-index="2">?</div>
+    <div class="slot" data-index="3">?</div>
+    <div class="slot" data-index="4">?</div>
+    <div class="logo-slot"><img src="https://i.ibb.co/SwjcgcGS/ASAL-JADI-MASUK-AJA.png"></div>
+    <div class="slot" data-index="5">?</div>
+    <div class="slot" data-index="6">?</div>
+    <div class="slot" data-index="7">?</div>
+    <div class="slot" data-index="8">?</div>
+    <div class="slot" data-index="9">?</div>
+  </div>
+  <div id="claimBox" style="display:none;">
+    <a id="claimLink" href="https://t.me/asupanfreebet" target="_blank">
+      <div class="neon-claim-btn" id="claimBtnText">
+        💰KLAIM HADIAH SEKARANG 🔜DISINI💰
+      </div>
+    </a>
+  </div>
+  <div class="sosmed-float">
+    <a href="https://klikblg.com/wa-blb" target="_blank" title="WhatsApp">
+      <img src="https://img.icons8.com/color/48/000000/whatsapp--v1.png" />
+    </a>
+    <a href="https://t.me/asupanfreebet" target="_blank" title="Telegram">
+      <img src="https://img.icons8.com/color/48/000000/telegram-app--v1.png" />
+    </a>
+    <a href="http://facebook.com/groups/vir4lbelegend" target="_blank" title="Facebook">
+      <img src="https://img.icons8.com/color/48/000000/facebook-new.png" />
+    </a>
+  </div>
+  <div class="marquee-box">
+    <div class="marquee-text">
+      🎯 SELAMAT KEMERDEKAAN 17.08.45 BELEGENDBET!📌 | 💸 HADIAH PASTI CAIR, GAK ADA ZONK! | 💰 KLAIM DI TELEGRAM ADMIN | 📌📌📌
+    </div>
+  </div>
+  <audio id="clickSound" src="https://files.catbox.moe/iv0k2c.mp3" preload="auto"></audio>
+  <audio id="spinSound" src="https://files.catbox.moe/0xjfgd.mp3" preload="auto"></audio>
+  <audio id="winSound" src="https://files.catbox.moe/1uwpjg.mp3" preload="auto"></audio>
+  <script>
+    const hadiahArr = [
+      { symbol: '🍒', value: 5000 },
+      { symbol: '🍉', value: 5000 },
+      { symbol: '🍒', value: 5000 },
+      { symbol: '🍉', value: 5000 },
+      { symbol: '🌟', value: 5000 },
+      { symbol: '🌟', value: 8000 },
+      { symbol: '👑', value: 8000 },
+      { symbol: '🌟', value: 8000 },
+      { symbol: '👑', value: 10000 },
+      { symbol: '👑', value: 10000 }
+    ];
+
+    function shuffle(arr) {
+      return arr.map(a => [Math.random(), a]).sort((a, b) => a[0] - b[0]).map(a => a[1]);
+    }
+    function mulaiGame() {
+      document.getElementById('claimBox').style.display = "none";
+      const user = document.getElementById("userid").value.trim();
+      const kode = document.getElementById("kode").value.trim();
+      if (!user || !kode) return alert("⚠️ Masukkan ID dan Kode SPIN!");
+      google.script.run.withSuccessHandler(function(res) {
+        if (res && res.startsWith("✅")) {
+          document.getElementById("clickSound").play();
+          const hasil = shuffle(hadiahArr);
+          const slots = document.querySelectorAll(".slot");
+          for (let i = 0; i < slots.length; i++) {
+            slots[i].innerText = "?";
+            slots[i].dataset.value = hasil[i] ? hasil[i].value : "";
+            slots[i].dataset.symbol = hasil[i] ? hasil[i].symbol : "";
+          }
+          spinAcak(user, kode, hasil);
+        } else {
+          alert(res || "Gagal validasi kupon!");
+        }
+      }).pakaiKuponMistery(user, kode);
+    }
+
+    function spinAcak(user, kode, hasil) {
+      const slots = document.querySelectorAll(".slot");
+      let current = 0;
+      let totalSpin = 15 + Math.floor(Math.random() * 6);
+      let counter = 0;
+      const spinSound = document.getElementById("spinSound");
+      spinSound.loop = true;
+      spinSound.play();
+      let slotAktif = 0;
+      const interval = setInterval(() => {
+        slots.forEach(s => s.classList.remove('glow', 'blink'));
+        if (slots[current]) slots[current].classList.add("glow", "blink");
+        slotAktif = current;
+        current = (current + 1) % slots.length;
+        counter++;
+        if (counter > totalSpin) {
+          clearInterval(interval);
+          spinSound.pause();
+          spinSound.currentTime = 0;
+          setTimeout(() => selesaiSpin(slotAktif, user, kode, hasil), 120);
+        }
+      }, 90);
+    }
+
+    function showMenangModal(symbol, nominal) {
+      let exist = document.getElementById('modal-neon-overlay');
+      if (exist) exist.remove();
+      const modal = document.createElement('div');
+      modal.className = "modal-neon-overlay";
+      modal.id = "modal-neon-overlay";
+      modal.innerHTML = `
+        <div class="modal-neon">
+          <div class="icon-top">${symbol}</div>
+          <div class="menang-title">
+            <span>🔥 Kamu</span> MENANG! <span>🎁</span>
+          </div>
+          <div class="hadiah-nominal">
+            Hadiah: <b>Rp ${nominal.toLocaleString()}</b>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+      modal.onclick = function(e) {
+        if (e.target === modal) modal.remove();
+      };
+      setTimeout(() => {
+        document.getElementById('claimBox').scrollIntoView({behavior:'smooth'});
+      }, 1200);
+    }
+
+    function selesaiSpin(indexAkhir, user, kode, hasil) {
+      const slots = document.querySelectorAll(".slot");
+      slots.forEach((s, idx) => {
+        s.classList.remove('glow', 'blink');
+        s.innerText = "?";
+      });
+      slots[indexAkhir].classList.add("glow", "blink");
+      slots[indexAkhir].innerText = hasil[indexAkhir].symbol;
+      const hadiah = parseInt(hasil[indexAkhir].value);
+      document.getElementById("winSound").play();
+      showMenangModal(hasil[indexAkhir].symbol, hadiah);
+      if (typeof google !== "undefined" && google.script && google.script.run) {
+        google.script.run.catatHasilMainMistery(kode, hadiah);
+      }
+      document.getElementById('claimBtnText').innerHTML = '💰KLAIM HADIAH SEKARANG 🔜DISINI💰';
+      document.getElementById('claimLink').href = 'https://t.me/asupanfreebet';
+      document.getElementById('claimBox').style.display = "flex";
+    }
+  </script>
+  <!-- LiveChat -->
+  <script>
+    window.__lc = window.__lc || {};
+    window.__lc.license = 13465644;
+    window.__lc.integration_name = "manual_channels";
+    window.__lc.product_name = "livechat";
+    (function(n,t,c){
+      function i(n){return e._h?e._h.apply(null,n):e._q.push(n)}
+      var e={_q:[],_h:null,_v:"2.0",
+        on:function(){i(["on",c.call(arguments)])},
+        once:function(){i(["once",c.call(arguments)])},
+        off:function(){i(["off",c.call(arguments)])},
+        get:function(){if(!e._h)throw new Error("[LiveChatWidget] You can't use getters before load.");return i(["get",c.call(arguments)])},
+        call:function(){i(["call",c.call(arguments)])},
+        init:function(){var n=t.createElement("script");n.async=!0,n.type="text/javascript",n.src="https://cdn.livechatinc.com/tracking.js",t.head.appendChild(n)}
+      };
+      !n.__lc.asyncInit&&e.init(),n.LiveChatWidget=n.LiveChatWidget||e
+    }(window,document,[].slice))
+  </script>
+  <noscript>
+    <a href="https://www.livechat.com/chat-with/13465644/" rel="nofollow">Chat with us</a>, powered by
+    <a href="https://www.livechat.com/?welcome" rel="noopener nofollow" target="_blank">LiveChat</a>
+  </noscript>
+</body>
+</html>
