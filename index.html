@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3,user-scalable=yes"/>
   <title>BOX MERDEKA BELEGENDBET</title>
   <style>
+    /* ------- CSS SAMA PERSIS PUNYA LU ------- */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -77,9 +78,14 @@
       transition: box-shadow 0.2s, background 0.18s;
       margin-bottom: 25px;
     }
-    #spinBtn:hover {
+    #spinBtn:hover:enabled {
       background: #ff4343;
       box-shadow: 0 0 44px 18px #ff6a6a, 0 0 120px 10px #ff1f96;
+    }
+    #spinBtn:disabled {
+      opacity: 0.4;
+      filter: grayscale(0.3);
+      cursor: not-allowed;
     }
     .spin-grid {
       display: grid;
@@ -381,30 +387,58 @@
   <script>
     // ---- GANTI URL API DI BAWAH INI ----
     const API_URL = 'https://script.google.com/macros/s/AKfycbwOiqRcVA5M8hAo_7C945IqeHxI9zDl6ikc26IVbKoZn5mlgc9NnUSgMcCn9pUezSgWmw/exec'; // GET dengan parameter userId, kupon, hadiah
- 
+
     const hadiahArr = [
-      { symbol: '🍒', value: 5000 },
-      { symbol: '🍉', value: 5000 },
-      { symbol: '🍒', value: 5000 },
-      { symbol: '🍉', value: 5000 },
-      { symbol: '🌟', value: 5000 },
-      { symbol: '🌟', value: 8000 },
-      { symbol: '👑', value: 8000 },
-      { symbol: '🌟', value: 8000 },
-      { symbol: '👑', value: 10000 },
-      { symbol: '👑', value: 10000 }
+    { symbol: '🍒', value: 5000 },
+    { symbol: '🍉', value: 5000 },
+    { symbol: '🍒', value: 5000 },
+    { symbol: '🍉', value: 5000 },
+    { symbol: '🌟', value: 5000 },
+    { symbol: '🌟', value: 8000 },
+    { symbol: '👑', value: 8000 },
+    { symbol: '🌟', value: 8000 },
+    { symbol: '👑', value: 10000 },
+    { symbol: '👑', value: 10000 }
     ];
- 
+
+    let isPlaying = false; // Anti spam global
+
     function shuffle(arr) {
       return arr.map(a => [Math.random(), a]).sort((a, b) => a[0] - b[0]).map(a => a[1]);
     }
- 
+
     async function mulaiGame() {
+      if (isPlaying) return;
+      isPlaying = true;
       document.getElementById('claimBox').style.display = "none";
       const user = document.getElementById("userid").value.trim();
       const kode = document.getElementById("kode").value.trim();
-      if (!user || !kode) return alert("⚠️ Masukkan ID dan Kode SPIN!");
-     
+      const spinBtn = document.getElementById("spinBtn");
+      if (!user || !kode) {
+        alert("⚠️ Masukkan ID dan Kode SPIN!");
+        isPlaying = false;
+        return;
+      }
+      spinBtn.disabled = true;
+
+      // VALIDASI KE API, cek kupon valid & belum dipakai
+      try {
+        const checkUrl = `${API_URL}?userId=${encodeURIComponent(user)}&kupon=${encodeURIComponent(kode)}&hadiah=0`;
+        const checkResp = await fetch(checkUrl);
+        const checkResult = await checkResp.text();
+        if (checkResult.includes('❌')) {
+          alert(checkResult); // Kalau kode salah/sudah dipakai, spin gagal
+          isPlaying = false;
+          spinBtn.disabled = false;
+          return;
+        }
+      } catch (e) {
+        alert("❌ Gagal konek ke server! Coba lagi.");
+        isPlaying = false;
+        spinBtn.disabled = false;
+        return;
+      }
+
       document.getElementById("clickSound").play();
       const hasil = shuffle(hadiahArr);
       const slots = document.querySelectorAll(".slot");
@@ -415,7 +449,7 @@
       }
       spinAcak(user, kode, hasil);
     }
- 
+
     function spinAcak(user, kode, hasil) {
       const slots = document.querySelectorAll(".slot");
       let current = 0;
@@ -439,7 +473,7 @@
         }
       }, 90);
     }
- 
+
     function showMenangModal(symbol, nominal) {
       let exist = document.getElementById('modal-neon-overlay');
       if (exist) exist.remove();
@@ -465,7 +499,7 @@
         document.getElementById('claimBox').scrollIntoView({behavior:'smooth'});
       }, 1200);
     }
- 
+
     async function selesaiSpin(indexAkhir, user, kode, hasil) {
       const slots = document.querySelectorAll(".slot");
       slots.forEach((s, idx) => {
@@ -477,30 +511,28 @@
       const hadiah = parseInt(hasil[indexAkhir].value);
       document.getElementById("winSound").play();
       showMenangModal(hasil[indexAkhir].symbol, hadiah);
- 
-      // Simpan hasil ke API menggunakan GET parameter sesuai Google Script
+
+      // SIMPAN ke API (ini baru update status kupon)
       try {
         const apiUrl = `${API_URL}?userId=${encodeURIComponent(user)}&kupon=${encodeURIComponent(kode)}&hadiah=${hadiah}`;
         const response = await fetch(apiUrl);
         const result = await response.text();
         console.log('API Response:', result);
-       
-        // Tampilkan pesan sukses dari Google Script
+
         if (result.includes('Selamat')) {
-          // Pesan sukses, tidak perlu alert
-          console.log('✅ Data berhasil disimpan:', result);
+          // Sukses, lanjut
         } else if (result.includes('❌')) {
-          // Jika ada error dari Google Script
           alert(result);
         }
       } catch(e) {
-        console.log('Error calling API:', e);
         alert('❌ Gagal menyimpan data ke server');
       }
-     
+
       document.getElementById('claimBtnText').innerHTML = '💰KLAIM HADIAH SEKARANG 🔜DISINI💰';
       document.getElementById('claimLink').href = 'https://t.me/asupanfreebet';
       document.getElementById('claimBox').style.display = "flex";
+      document.getElementById('spinBtn').disabled = true; // Disable tombol spin setelah main
+      isPlaying = false;
     }
   </script>
   <!-- LiveChat -->
