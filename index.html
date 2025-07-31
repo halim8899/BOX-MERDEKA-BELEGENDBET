@@ -4,7 +4,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=3,user-scalable=yes"/>
   <title>BOX MERDEKA BELEGENDBET</title>
   <style>
-    /* ------- CSS SAMA PERSIS PUNYA LU ------- */
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -296,13 +295,57 @@
       box-shadow: 0 0 48px 16px #ffe600, 0 0 4px #000;
     }
     @media (max-width: 700px) {
-      #claimBox {
-        width: 98vw !important;
-        max-width: 98vw !important;
+      h2 { font-size: 24px !important; gap: 3px !important; }
+      .glow-icon { font-size: 28px !important; }
+      .glow-title { font-size: 20px !important; }
+      .spin-grid {
+        grid-template-columns: repeat(4, 20vw);
+        grid-template-rows: repeat(3, 20vw);
+        gap: 3vw;
+        margin: 0 auto;
+        max-width: 99vw;
       }
-      #claimBox .neon-claim-btn {
-        font-size: 1.3rem;
-        padding: 18px 0;
+      .slot {
+        width: 18vw !important;
+        height: 18vw !important;
+        font-size: 6vw !important;
+        min-width: 42px;
+        min-height: 42px;
+        max-width: 72px;
+        max-height: 72px;
+      }
+      .logo-slot img {
+        max-width: 65vw !important;
+        max-height: 60vw !important;
+        min-width: 55px;
+        min-height: 45px;
+      }
+      #spinBtn {
+        padding: 12px 12px !important;
+        font-size: 1.1rem !important;
+        border-radius: 10px !important;
+        margin-bottom: 15px !important;
+      }
+      .input-group input, .input-row input {
+        font-size: 1rem !important;
+        padding: 8px !important;
+        border-radius: 8px !important;
+        max-width: 99vw !important;
+      }
+      .sosmed-float a img {
+        width: 42px !important;
+        height: 42px !important;
+        box-shadow: 0 0 6px 2px lime !important;
+      }
+      .sosmed-float { left: 2vw !important; }
+      .marquee-box { font-size: 10px !important; }
+      #claimBox { width: 98vw !important; max-width: 98vw !important; }
+      #claimBox .neon-claim-btn { font-size: 1.3rem; padding: 18px 0; }
+      .modal-neon {
+        padding: 12px 8px 14px 8px !important;
+        min-width: 95vw !important;
+        max-width: 99vw !important;
+        font-size: 0.9rem !important;
       }
     }
     #claimBox a,
@@ -386,19 +429,19 @@
   <audio id="winSound" src="https://files.catbox.moe/1uwpjg.mp3" preload="auto"></audio>
   <script>
     // ---- GANTI URL API DI BAWAH INI ----
-    const API_URL = 'https://script.google.com/macros/s/AKfycbwOiqRcVA5M8hAo_7C945IqeHxI9zDl6ikc26IVbKoZn5mlgc9NnUSgMcCn9pUezSgWmw/exec'; // GET dengan parameter userId, kupon, hadiah
+    const API_URL = 'https://script.google.com/macros/s/AKfycbwOiqRcVA5M8hAo_7C945IqeHxI9zDl6ikc26IVbKoZn5mlgc9NnUSgMcCn9pUezSgWmw/exec';
 
     const hadiahArr = [
-    { symbol: '🍒', value: 5000 },
-    { symbol: '🍉', value: 5000 },
-    { symbol: '🍒', value: 5000 },
-    { symbol: '🍉', value: 5000 },
-    { symbol: '🌟', value: 5000 },
-    { symbol: '🌟', value: 8000 },
-    { symbol: '👑', value: 8000 },
-    { symbol: '🌟', value: 8000 },
-    { symbol: '👑', value: 10000 },
-    { symbol: '👑', value: 10000 }
+      { symbol: '🍒', value: 5000 },
+      { symbol: '🍉', value: 5000 },
+      { symbol: '🍒', value: 5000 },
+      { symbol: '🍉', value: 5000 },
+      { symbol: '🌟', value: 5000 },
+      { symbol: '🌟', value: 8000 },
+      { symbol: '👑', value: 8000 },
+      { symbol: '🌟', value: 8000 },
+      { symbol: '👑', value: 10000 },
+      { symbol: '👑', value: 10000 }
     ];
 
     let isPlaying = false; // Anti spam global
@@ -427,7 +470,7 @@
         const checkResp = await fetch(checkUrl);
         const checkResult = await checkResp.text();
         if (checkResult.includes('❌')) {
-          alert(checkResult); // Kalau kode salah/sudah dipakai, spin gagal
+          alert(checkResult);
           isPlaying = false;
           spinBtn.disabled = false;
           return;
@@ -512,7 +555,7 @@
       document.getElementById("winSound").play();
       showMenangModal(hasil[indexAkhir].symbol, hadiah);
 
-      // SIMPAN ke API (ini baru update status kupon)
+      // SIMPAN ke API
       try {
         const apiUrl = `${API_URL}?userId=${encodeURIComponent(user)}&kupon=${encodeURIComponent(kode)}&hadiah=${hadiah}`;
         const response = await fetch(apiUrl);
@@ -520,7 +563,7 @@
         console.log('API Response:', result);
 
         if (result.includes('Selamat')) {
-          // Sukses, lanjut
+          // Sukses
         } else if (result.includes('❌')) {
           alert(result);
         }
@@ -531,7 +574,7 @@
       document.getElementById('claimBtnText').innerHTML = '💰KLAIM HADIAH SEKARANG 🔜DISINI💰';
       document.getElementById('claimLink').href = 'https://t.me/asupanfreebet';
       document.getElementById('claimBox').style.display = "flex";
-      document.getElementById('spinBtn').disabled = true; // Disable tombol spin setelah main
+      document.getElementById('spinBtn').disabled = true;
       isPlaying = false;
     }
   </script>
